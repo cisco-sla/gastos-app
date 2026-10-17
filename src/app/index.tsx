@@ -1,28 +1,13 @@
-import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import Home from "../pantallas/Home";
+import NuevoGasto from "../pantallas/NuevoGasto";
 
 export default function Index() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>Gestor de gastos</Text>
-      <Text style={styles.texto}>Total gastado: $0</Text>
-    </View>
-  );
-}
+  const [pantalla, setPantalla] = useState("home");
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    paddingTop: 60,
-    backgroundColor: "#ffffff",
-  },
-  titulo: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#000000",
-  },
-  texto: {
-    color: "#000000",
-  },
-});
+  if (pantalla === "carga") {
+    return <NuevoGasto onVolver={() => setPantalla("home")} />;
+  }
+
+  return <Home onNuevoGasto={() => setPantalla("carga")} />;
+}
