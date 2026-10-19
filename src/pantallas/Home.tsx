@@ -1,4 +1,5 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
+import { formatearMonto } from "../formato";
 import type { Gasto } from "../tipos";
 import { colores } from "../tema";
 
@@ -13,6 +14,22 @@ export default function Home({ gastos, onNuevoGasto }: Props) {
       <Text style={styles.titulo}>Gestor de Gastos</Text>
       <Text style={styles.texto}>Total gastado: $0</Text>
       <Text style={styles.texto}>Cantidad de gastos: {gastos.length}</Text>
+
+      <ScrollView style={styles.lista}>
+        {gastos.length === 0 ? (
+          <Text style={styles.vacio}>Todavia no cargaste gastos.</Text>
+        ) : (
+          gastos.map((gasto) => (
+            <View key={gasto.id} style={styles.fila}>
+              <Text style={styles.descripcion}>{gasto.descripcion}</Text>
+              <Text style={styles.detalle}>
+                ${formatearMonto(gasto.monto)} - {gasto.categoria}
+              </Text>
+            </View>
+          ))
+        )}
+      </ScrollView>
+
       <Button
         title="Nuevo Gasto"
         onPress={onNuevoGasto}
@@ -38,5 +55,24 @@ const styles = StyleSheet.create({
   texto: {
     color: colores.texto,
     marginBottom: 16,
+  },
+  lista: {
+    flex: 1,
+    marginBottom: 12,
+  },
+  fila: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colores.borde,
+  },
+  descripcion: {
+    color: colores.texto,
+    fontSize: 16,
+  },
+  detalle: {
+    color: colores.textoSecundario,
+  },
+  vacio: {
+    color: colores.textoSecundario,
   },
 });
