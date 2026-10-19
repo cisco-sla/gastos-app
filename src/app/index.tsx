@@ -1,13 +1,24 @@
 import { useState } from "react";
 import Home from "../pantallas/Home";
 import NuevoGasto from "../pantallas/NuevoGasto";
+import type { Gasto } from "../tipos";
 
 export default function Index() {
   const [pantalla, setPantalla] = useState("home");
+  const [gastos, setGastos] = useState<Gasto[]>([]);
 
-  if (pantalla === "carga") {
-    return <NuevoGasto onVolver={() => setPantalla("home")} />;
+  function agregarGasto(gasto: Gasto) {
+    setGastos([...gastos, gasto]);
   }
 
-  return <Home onNuevoGasto={() => setPantalla("carga")} />;
+  if (pantalla === "carga") {
+    return (
+      <NuevoGasto
+        onVolver={() => setPantalla("home")}
+        onAgregar={agregarGasto}
+      />
+    );
+  }
+
+  return <Home gastos={gastos} onNuevoGasto={() => setPantalla("carga")} />;
 }

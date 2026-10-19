@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   Button,
   Pressable,
   StyleSheet,
@@ -9,15 +10,41 @@ import {
 } from "react-native";
 import { Categorias } from "../categorias";
 import { colores } from "../tema";
+import type { Gasto } from "../tipos";
 
 type Props = {
   onVolver: () => void;
+  onAgregar: (gasto: Gasto) => void;
 };
 
-export default function NuevoGasto({ onVolver }: Props) {
+export default function NuevoGasto({ onVolver, onAgregar }: Props) {
   const [descripcion, setDescripcion] = useState("");
   const [monto, setMonto] = useState("");
   const [categoria, setCategoria] = useState(Categorias[0]);
+
+  function agregar() {
+    const montoNumero = Number(monto.replace(",", "."));
+
+    if (descripcion.trim() === "" || isNaN(montoNumero) || montoNumero <= 0) {
+      Alert.alert(
+        "Faltan datos",
+        "Completá la descripción y un monto mayor a 0",
+      );
+      return;
+    }
+
+    onAgregar({
+      id: Date.now(),
+      descripcion: descripcion.trim(),
+      monto: montoNumero,
+      categoria: categoria,
+      fecha: new Date().toISOString(),
+    });
+
+    setDescripcion("");
+    setMonto("");
+    setCategoria(Categorias[0]);
+  }
 
   return (
     <View style={styles.container}>
@@ -62,11 +89,14 @@ export default function NuevoGasto({ onVolver }: Props) {
         ))}
       </View>
 
-      <Text style={styles.texto}>
-        Vista previa: {descripcion} - ${monto} - {categoria}
-      </Text>
-
-      <Button title="Volver" onPress={onVolver} color={colores.acento} />
+      <View style={styles.boton}>
+        <Button
+          title="Agregar gasto"
+          onPress={agregar}
+          color={colores.acento}
+        />
+      </View>
+      <Button title="Volver" onPress={onVolver} color={colores.borde} />
     </View>
   );
 }
@@ -119,6 +149,9 @@ const styles = StyleSheet.create({
   },
   chipTextoActivo: {
     color: colores.acento,
+  },
+  boton: {
+    marginBottom: 12,
   },
   texto: {
     color: colores.texto,
