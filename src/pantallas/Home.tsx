@@ -7,9 +7,10 @@ import {
   Text,
   View,
 } from "react-native";
+import { Categorias } from "../categorias";
 import { formatearMonto } from "../formato";
-import type { Gasto } from "../tipos";
 import { colores } from "../tema";
+import type { Gasto } from "../tipos";
 
 type Props = {
   gastos: Gasto[];
@@ -27,6 +28,22 @@ export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
     }
   }
 
+  const porCategoria = Categorias.map((categoria) => {
+    const monto = gastos
+      .filter((gasto) => gasto.categoria === categoria)
+      .reduce((suma, gasto) => suma + gasto.monto, 0);
+    return { categoria, monto };
+  });
+
+  const categoriasConGasto = porCategoria
+    .filter((item) => item.monto > 0)
+    .sort((a, b) => b.monto - a.monto);
+
+  const maximoCategoria = Math.max(
+    ...porCategoria.map((item) => item.monto),
+    1,
+  );
+
   function confirmarEliminar(gasto: Gasto) {
     Alert.alert(
       "Eliminar gasto",
@@ -40,18 +57,46 @@ export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Gestor de Gastos</Text>
-      <Text style={styles.texto}>Total gastado: ${formatearMonto(total)}</Text>
-      <Text style={styles.texto}>Cantidad de gastos: {gastos.length}</Text>
-      {masAlto !== null && (
+      <ScrollView style={styles.contenido}>
+        <Text style={styles.titulo}>Gestor de Gastos</Text>
         <Text style={styles.texto}>
-          Gasto más alto: {masAlto.descripcion}, $
-          {formatearMonto(masAlto.monto)}
+          Total gastado: ${formatearMonto(total)}
         </Text>
-      )}
-      <ScrollView style={styles.lista}>
+        <Text style={styles.texto}>Cantidad de gastos: {gastos.length}</Text>
+        {masAlto !== null && (
+          <Text style={styles.texto}>
+            Gasto más alto: {masAlto.descripcion}, $
+            {formatearMonto(masAlto.monto)}
+          </Text>
+        )}
+
+        {categoriasConGasto.length > 0 && (
+          <View style={styles.bloque}>
+            <Text style={styles.subtitulo}>Gasto por categoría</Text>
+            {categoriasConGasto.map((item) => (
+              <View key={item.categoria} style={styles.categoriaFila}>
+                <View style={styles.categoriaTexto}>
+                  <Text style={styles.detalle}>{item.categoria}</Text>
+                  <Text style={styles.detalle}>
+                    ${formatearMonto(item.monto)}
+                  </Text>
+                </View>
+                <View style={styles.barraFondo}>
+                  <View
+                    style={[
+                      styles.barra,
+                      { width: `${(item.monto / maximoCategoria) * 100}%` },
+                    ]}
+                  />
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
+        <Text style={styles.subtitulo}>Gastos</Text>
         {gastos.length === 0 ? (
-          <Text style={styles.vacio}>Todavia no cargaste gastos.</Text>
+          <Text style={styles.vacio}>Todavía no cargaste gastos.</Text>
         ) : (
           gastos.map((gasto) => (
             <View key={gasto.id} style={styles.fila}>
@@ -85,6 +130,10 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     backgroundColor: colores.fondo,
   },
+  contenido: {
+    flex: 1,
+    marginBottom: 12,
+  },
   titulo: {
     fontSize: 28,
     fontWeight: "bold",
@@ -95,9 +144,29 @@ const styles = StyleSheet.create({
     color: colores.texto,
     marginBottom: 16,
   },
-  lista: {
-    flex: 1,
-    marginBottom: 12,
+  bloque: {
+    marginBottom: 16,
+  },
+  subtitulo: {
+    color: colores.textoSecundario,
+    marginBottom: 6,
+  },
+  categoriaFila: {
+    marginBottom: 8,
+  },
+  categoriaTexto: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  barraFondo: {
+    height: 6,
+    backgroundColor: colores.superficie,
+    borderRadius: 3,
+  },
+  barra: {
+    height: 6,
+    backgroundColor: colores.acento,
+    borderRadius: 3,
   },
   fila: {
     flexDirection: "row",
