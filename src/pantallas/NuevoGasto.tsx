@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Button,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { Categorias } from "../categorias";
 import { colores } from "../tema";
 
 type Props = {
@@ -9,6 +17,7 @@ type Props = {
 export default function NuevoGasto({ onVolver }: Props) {
   const [descripcion, setDescripcion] = useState("");
   const [monto, setMonto] = useState("");
+  const [categoria, setCategoria] = useState(Categorias[0]);
 
   return (
     <View style={styles.container}>
@@ -19,11 +28,11 @@ export default function NuevoGasto({ onVolver }: Props) {
         style={styles.input}
         value={descripcion}
         onChangeText={(texto) => setDescripcion(texto)}
-        placeholder="Ej. Alimentos y bebidas"
+        placeholder="Ej. Alimentos"
         placeholderTextColor={colores.textoSecundario}
       />
 
-      <Text style={styles.etiqueta}>Descripción</Text>
+      <Text style={styles.etiqueta}>Monto</Text>
       <TextInput
         style={styles.input}
         value={monto}
@@ -33,8 +42,28 @@ export default function NuevoGasto({ onVolver }: Props) {
         keyboardType="numeric"
       />
 
+      <Text style={styles.etiqueta}>Categoría</Text>
+      <View style={styles.categorias}>
+        {Categorias.map((cat) => (
+          <Pressable
+            key={cat}
+            onPress={() => setCategoria(cat)}
+            style={[styles.chip, categoria === cat && styles.chipActivo]}
+          >
+            <Text
+              style={[
+                styles.chipTexto,
+                categoria === cat && styles.chipTextoActivo,
+              ]}
+            >
+              {cat}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
       <Text style={styles.texto}>
-        Vista previa: {descripcion} - ${monto}
+        Vista previa: {descripcion} - ${monto} - {categoria}
       </Text>
 
       <Button title="Volver" onPress={onVolver} color={colores.acento} />
@@ -67,6 +96,29 @@ const styles = StyleSheet.create({
     padding: 12,
     color: colores.texto,
     marginBottom: 12,
+  },
+  categorias: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 12,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: colores.borde,
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  chipActivo: {
+    borderColor: colores.acento,
+    backgroundColor: colores.acentoSuave,
+  },
+  chipTexto: {
+    color: colores.texto,
+  },
+  chipTextoActivo: {
+    color: colores.acento,
   },
   texto: {
     color: colores.texto,

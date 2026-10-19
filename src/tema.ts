@@ -5,5 +5,6 @@ export const colores = {
   texto: "#ffffff",
   textoSecundario: "#a0a0a0",
   acento: "#4da3ff",
+  acentoSuave: "12304d",
   warning: "#ff6b6b",
 };
