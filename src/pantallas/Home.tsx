@@ -9,10 +9,12 @@ type Props = {
 };
 
 export default function Home({ gastos, onNuevoGasto }: Props) {
+  const total = gastos.reduce((suma, gasto) => suma + gasto.monto, 0);
+
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Gestor de Gastos</Text>
-      <Text style={styles.texto}>Total gastado: $0</Text>
+      <Text style={styles.texto}>Total gastado: ${formatearMonto(total)}</Text>
       <Text style={styles.texto}>Cantidad de gastos: {gastos.length}</Text>
 
       <ScrollView style={styles.lista}>
