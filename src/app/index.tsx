@@ -11,6 +11,10 @@ export default function Index() {
     setGastos([...gastos, gasto]);
   }
 
+  function eliminarGasto(id: number) {
+    setGastos(gastos.filter((gasto) => gasto.id !== id));
+  }
+
   if (pantalla === "carga") {
     return (
       <NuevoGasto
@@ -20,5 +24,11 @@ export default function Index() {
     );
   }
 
-  return <Home gastos={gastos} onNuevoGasto={() => setPantalla("carga")} />;
+  return (
+    <Home
+      gastos={gastos}
+      onNuevoGasto={() => setPantalla("carga")}
+      onEliminar={eliminarGasto}
+    />
+  );
 }
