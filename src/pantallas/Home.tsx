@@ -20,6 +20,13 @@ type Props = {
 export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
   const total = gastos.reduce((suma, gasto) => suma + gasto.monto, 0);
 
+  let masAlto: Gasto | null = null;
+  for (const gasto of gastos) {
+    if (masAlto === null || gasto.monto > masAlto.monto) {
+      masAlto = gasto;
+    }
+  }
+
   function confirmarEliminar(gasto: Gasto) {
     Alert.alert(
       "Eliminar gasto",
@@ -36,7 +43,12 @@ export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
       <Text style={styles.titulo}>Gestor de Gastos</Text>
       <Text style={styles.texto}>Total gastado: ${formatearMonto(total)}</Text>
       <Text style={styles.texto}>Cantidad de gastos: {gastos.length}</Text>
-
+      {masAlto !== null && (
+        <Text style={styles.texto}>
+          Gasto más alto: {masAlto.descripcion}, $
+          {formatearMonto(masAlto.monto)}
+        </Text>
+      )}
       <ScrollView style={styles.lista}>
         {gastos.length === 0 ? (
           <Text style={styles.vacio}>Todavia no cargaste gastos.</Text>
