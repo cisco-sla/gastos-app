@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Alert,
   Button,
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
+  const [filtro, setFiltro] = useState("Todas");
   const total = gastos.reduce((suma, gasto) => suma + gasto.monto, 0);
 
   let masAlto: Gasto | null = null;
@@ -43,6 +45,13 @@ export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
     ...porCategoria.map((item) => item.monto),
     1,
   );
+
+  const opcionesFiltro = ["Todas", ...Categorias];
+
+  const gastosFiltrados =
+    filtro === "Todas"
+      ? gastos
+      : gastos.filter((gasto) => gasto.categoria === filtro);
 
   function confirmarEliminar(gasto: Gasto) {
     Alert.alert(
@@ -94,11 +103,35 @@ export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
           </View>
         )}
 
+        {gastos.length > 0 && (
+          <View style={styles.bloque}>
+            <Text style={styles.subtitulo}>Filtrar por categoría</Text>
+            <View style={styles.filtros}>
+              {opcionesFiltro.map((opcion) => (
+                <Pressable
+                  key={opcion}
+                  onPress={() => setFiltro(opcion)}
+                  style={[styles.chip, filtro === opcion && styles.chipActivo]}
+                >
+                  <Text
+                    style={[
+                      styles.chipTexto,
+                      filtro === opcion && styles.chipTextoActivo,
+                    ]}
+                  >
+                    {opcion}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
+
         <Text style={styles.subtitulo}>Gastos</Text>
         {gastos.length === 0 ? (
           <Text style={styles.vacio}>Todavía no cargaste gastos.</Text>
         ) : (
-          gastos.map((gasto) => (
+          gastosFiltrados.map((gasto) => (
             <View key={gasto.id} style={styles.fila}>
               <View style={styles.datos}>
                 <Text style={styles.descripcion}>{gasto.descripcion}</Text>
@@ -167,6 +200,28 @@ const styles = StyleSheet.create({
     height: 6,
     backgroundColor: colores.acento,
     borderRadius: 3,
+  },
+  filtros: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: colores.borde,
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  chipActivo: {
+    borderColor: colores.acento,
+    backgroundColor: colores.acentoSuave,
+  },
+  chipTexto: {
+    color: colores.texto,
+  },
+  chipTextoActivo: {
+    color: colores.acento,
   },
   fila: {
     flexDirection: "row",
