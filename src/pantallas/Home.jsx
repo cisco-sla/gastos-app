@@ -8,29 +8,23 @@ import {
   Text,
   View,
 } from "react-native";
-import { Categorias } from "../categorias";
+import { CATEGORIAS } from "../categorias";
 import { formatearMonto } from "../formato";
 import { colores } from "../tema";
-import type { Gasto } from "../tipos";
 
-type Props = {
-  gastos: Gasto[];
-  onNuevoGasto: () => void;
-  onEliminar: (id: number) => void;
-};
-
-export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
+export default function Home({ gastos, onNuevoGasto, onEliminar }) {
   const [filtro, setFiltro] = useState("Todas");
+
   const total = gastos.reduce((suma, gasto) => suma + gasto.monto, 0);
 
-  let masAlto: Gasto | null = null;
+  let masAlto = null;
   for (const gasto of gastos) {
     if (masAlto === null || gasto.monto > masAlto.monto) {
       masAlto = gasto;
     }
   }
 
-  const porCategoria = Categorias.map((categoria) => {
+  const porCategoria = CATEGORIAS.map((categoria) => {
     const monto = gastos
       .filter((gasto) => gasto.categoria === categoria)
       .reduce((suma, gasto) => suma + gasto.monto, 0);
@@ -46,14 +40,14 @@ export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
     1,
   );
 
-  const opcionesFiltro = ["Todas", ...Categorias];
+  const opcionesFiltro = ["Todas", ...CATEGORIAS];
 
   const gastosFiltrados =
     filtro === "Todas"
       ? gastos
       : gastos.filter((gasto) => gasto.categoria === filtro);
 
-  function confirmarEliminar(gasto: Gasto) {
+  function confirmarEliminar(gasto) {
     Alert.alert(
       "Eliminar gasto",
       `¿Eliminar "${gasto.descripcion}" por $${formatearMonto(gasto.monto)}?`,
@@ -130,6 +124,8 @@ export default function Home({ gastos, onNuevoGasto, onEliminar }: Props) {
         <Text style={styles.subtitulo}>Gastos</Text>
         {gastos.length === 0 ? (
           <Text style={styles.vacio}>Todavía no cargaste gastos.</Text>
+        ) : gastosFiltrados.length === 0 ? (
+          <Text style={styles.vacio}>No hay gastos en esta categoría.</Text>
         ) : (
           gastosFiltrados.map((gasto) => (
             <View key={gasto.id} style={styles.fila}>
@@ -242,7 +238,7 @@ const styles = StyleSheet.create({
     color: colores.textoSecundario,
   },
   eliminar: {
-    color: colores.warning,
+    color: colores.peligro,
     padding: 8,
   },
   vacio: {

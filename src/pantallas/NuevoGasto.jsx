@@ -8,19 +8,13 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { Categorias } from "../categorias";
+import { CATEGORIAS } from "../categorias";
 import { colores } from "../tema";
-import type { Gasto } from "../tipos";
 
-type Props = {
-  onVolver: () => void;
-  onAgregar: (gasto: Gasto) => void;
-};
-
-export default function NuevoGasto({ onVolver, onAgregar }: Props) {
+export default function NuevoGasto({ onVolver, onAgregar }) {
   const [descripcion, setDescripcion] = useState("");
   const [monto, setMonto] = useState("");
-  const [categoria, setCategoria] = useState(Categorias[0]);
+  const [categoria, setCategoria] = useState(CATEGORIAS[0]);
 
   function agregar() {
     const montoNumero = Number(monto.replace(",", "."));
@@ -28,11 +22,12 @@ export default function NuevoGasto({ onVolver, onAgregar }: Props) {
     if (descripcion.trim() === "" || isNaN(montoNumero) || montoNumero <= 0) {
       Alert.alert(
         "Faltan datos",
-        "Completá la descripción y un monto mayor a 0",
+        "Completá la descripción y un monto mayor a cero.",
       );
       return;
     }
 
+    // Un gasto es un objeto: { id, descripcion, monto, categoria, fecha }
     onAgregar({
       id: Date.now(),
       descripcion: descripcion.trim(),
@@ -43,7 +38,7 @@ export default function NuevoGasto({ onVolver, onAgregar }: Props) {
 
     setDescripcion("");
     setMonto("");
-    setCategoria(Categorias[0]);
+    setCategoria(CATEGORIAS[0]);
   }
 
   return (
@@ -55,7 +50,7 @@ export default function NuevoGasto({ onVolver, onAgregar }: Props) {
         style={styles.input}
         value={descripcion}
         onChangeText={(texto) => setDescripcion(texto)}
-        placeholder="Ej. Alimentos"
+        placeholder="Ej: Supermercado"
         placeholderTextColor={colores.textoSecundario}
       />
 
@@ -64,14 +59,14 @@ export default function NuevoGasto({ onVolver, onAgregar }: Props) {
         style={styles.input}
         value={monto}
         onChangeText={(texto) => setMonto(texto)}
-        placeholder="Ej. 15000"
+        placeholder="Ej: 15000"
         placeholderTextColor={colores.textoSecundario}
         keyboardType="numeric"
       />
 
       <Text style={styles.etiqueta}>Categoría</Text>
       <View style={styles.categorias}>
-        {Categorias.map((cat) => (
+        {CATEGORIAS.map((cat) => (
           <Pressable
             key={cat}
             onPress={() => setCategoria(cat)}
@@ -152,9 +147,5 @@ const styles = StyleSheet.create({
   },
   boton: {
     marginBottom: 12,
-  },
-  texto: {
-    color: colores.texto,
-    marginBottom: 16,
   },
 });

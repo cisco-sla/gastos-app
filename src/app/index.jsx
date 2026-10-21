@@ -2,13 +2,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import Home from "../pantallas/Home";
 import NuevoGasto from "../pantallas/NuevoGasto";
-import type { Gasto } from "../tipos";
 
-const Clave = "gastos";
+const CLAVE = "gastos";
 
-async function guardar(lista: Gasto[]) {
+async function guardar(lista) {
   try {
-    await AsyncStorage.setItem(Clave, JSON.stringify(lista));
+    await AsyncStorage.setItem(CLAVE, JSON.stringify(lista));
   } catch (error) {
     console.log("Error al guardar los gastos:", error);
   }
@@ -16,12 +15,12 @@ async function guardar(lista: Gasto[]) {
 
 export default function Index() {
   const [pantalla, setPantalla] = useState("home");
-  const [gastos, setGastos] = useState<Gasto[]>([]);
+  const [gastos, setGastos] = useState([]);
 
   useEffect(() => {
     async function cargar() {
       try {
-        const texto = await AsyncStorage.getItem(Clave);
+        const texto = await AsyncStorage.getItem(CLAVE);
         if (texto !== null) {
           setGastos(JSON.parse(texto));
         }
@@ -32,13 +31,13 @@ export default function Index() {
     cargar();
   }, []);
 
-  function agregarGasto(gasto: Gasto) {
+  function agregarGasto(gasto) {
     const nuevos = [...gastos, gasto];
     setGastos(nuevos);
     guardar(nuevos);
   }
 
-  function eliminarGasto(id: number) {
+  function eliminarGasto(id) {
     const nuevos = gastos.filter((gasto) => gasto.id !== id);
     setGastos(nuevos);
     guardar(nuevos);
